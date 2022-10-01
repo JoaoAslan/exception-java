@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Scanner;
 
 import aula3_projeto.model.entities.Reservation;
+import aula3_projeto.model.exceptions.DomainException;
 
 public class Program {
 
@@ -11,17 +12,14 @@ public class Program {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.print("Room number: ");
-		int number = sc.nextInt();
-		System.out.print("Check-in date (dd/MM/yyyy): ");
-		LocalDate checkIn = LocalDate.parse(sc.next(), Reservation.dtf);
-		System.out.print("Check-out date (dd/MM/yyyy): ");
-		LocalDate checkOut = LocalDate.parse(sc.next(), Reservation.dtf);
+		try {
+			System.out.print("Room number: ");
+			int number = sc.nextInt();
+			System.out.print("Check-in date (dd/MM/yyyy): ");
+			LocalDate checkIn = LocalDate.parse(sc.next(), Reservation.dtf);
+			System.out.print("Check-out date (dd/MM/yyyy): ");
+			LocalDate checkOut = LocalDate.parse(sc.next(), Reservation.dtf);
 
-		if (!checkOut.isAfter(checkIn)) {
-			System.out.println("Error in reservation: Check-out date must be after check-in date");
-		}
-		else {
 			Reservation reservation = new Reservation(number, checkIn, checkOut);
 			System.out.println(reservation);
 
@@ -31,15 +29,17 @@ public class Program {
 			System.out.print("Check-out date (dd/MM/yyyy): ");
 			checkOut = LocalDate.parse(sc.next(), Reservation.dtf);
 
-			String error = reservation.updateDates(checkIn, checkOut);
-
-			if (error != null) {
-				System.out.print("Error in reservation: "+ error);
-			}
-			else {
-				System.out.println(reservation);
-			}
+			reservation.updateDates(checkIn, checkOut);
+			System.out.println(reservation);
 		}
+		catch (DomainException e) {
+			System.out.println("Error in reservation: "+ e.getMessage());
+		}
+		catch (RuntimeException e) {
+			System.out.println("Unexpected error");
+		}
+
+
 		sc.close();
 	}
 }
